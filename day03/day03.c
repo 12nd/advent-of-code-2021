@@ -89,6 +89,8 @@ int main(void)
         }
     }
 
+    fclose(inFile);
+
     printf("%d\n", binToDec(gamma) * invertBits(binToDec(gamma)));
     printf("%d\n", binToDec(inp[rating(inp,nLines,1)])*binToDec(inp[rating(inp,nLines,0)]));
     return 0;

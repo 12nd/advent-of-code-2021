@@ -62,7 +62,7 @@ int main(void)
     char line[1000];
     int moves[1000] = {0};
     int nMoves = 0;
-    struct BOARD boards[1000];
+    struct BOARD boards[1000] = {0};
     int nBoards = 0;
 
     fgets(line, 900, inFile);
@@ -111,6 +111,7 @@ int main(void)
             }
         }
     }
+    fclose(inFile);
 
     return 0;
 }
