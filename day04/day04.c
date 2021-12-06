@@ -24,30 +24,21 @@ struct BOARD playBingo(struct BOARD board, int move)
 int checkWin(struct BOARD board)
 {
     int vCnt[5] = {0};
-    int dCnt[2] = {0};
     for (int i=0; i<5; ++i) {
+        int hCnt = 0;
         for (int j=0; j<5; ++j) {
             if (board.mark[i][j] == 0)
-                break;
-            else if (j == 4)
-                /* horizontal win */
+                continue;
+            ++hCnt;
+            ++vCnt[j];
+            /* horizontal win */
+            if (hCnt == 5)
                 return 1;
-            else if (i == j)
-                ++dCnt[0];
-            else if (i + j == 4)
-                ++dCnt[1];
-            else
-                ++vCnt[j];
         }
     }
     /* vertical win */
     for (int i=0; i<5; ++i) {
         if (vCnt[i] == 5)
-            return 1;
-    }
-    /* diagonal win */
-    for (int i=0; i<2; ++i) {
-        if (dCnt[i] == 5)
             return 1;
     }
     return 0;
@@ -72,7 +63,7 @@ int main(void)
     int moves[1000] = {0};
     int nMoves = 0;
     struct BOARD boards[1000];
-    int nBoards = 1;
+    int nBoards = 0;
 
     fgets(line, 900, inFile);
     char *t = strtok(line, ",");
@@ -92,22 +83,34 @@ int main(void)
         }
         t = strtok(line, " ");
         for (int j=0; j<5; ++j) {
-            boards[nBoards-1].board[i][j] = atoi(t);
+            boards[nBoards].board[i][j] = atoi(t);
             t = strtok(NULL, " ");
         }
         ++i;
     }
+    ++nBoards;
 
-    /* play bingo */
+    int wBoards[nBoards];
+    int rBoards = nBoards;
+    for (i=0;i<nBoards;++i)
+        wBoards[i] = 0;
     for (int m=0; m<nMoves; ++m) {
-        for (int b=0; b<nBoards; ++b){
+        for (int b=0; b<nBoards; ++b) {
+            if (wBoards[b])
+                continue;
             boards[b] = playBingo(boards[b], moves[m]);
             if (checkWin(boards[b])) {
-                printf("%d\n", calcScore(boards[b], moves[m]));
-                return 0;
+                if (rBoards == nBoards)
+                    /* part 1 */
+                    printf("%d\n", calcScore(boards[b], moves[m]));
+                wBoards[b] = 1;
+                --rBoards;
+                if (rBoards == 0)
+                    /* part 2 */
+                    printf("%d\n", calcScore(boards[b], moves[m]));
             }
         }
     }
-    printf("No winner");
+
     return 0;
 }
