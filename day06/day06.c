@@ -9,41 +9,34 @@ int main(int argc, char **argv)
         printf("Usage: %s <input file> <no. days>", argv[0]);
     }
 
-    int days=atoi(argv[2]);
-    int n_fish = 0;
-    int fish_size = 500;
-    int *fish = (int *)malloc(fish_size * sizeof(int));
+    int days= atoi(argv[2]);
+    unsigned long long fish[9] = {0};
+     /* read input */
     FILE *inp_file = fopen(argv[1], "r");
-    char line[10000];
-    fgets(line, 9000, inp_file);
+    int age;
+    while (fscanf(inp_file, "%d", &age) == 1) {
+        ++fish[age];
+        fgetc(inp_file);
+    }
     fclose(inp_file);
 
-    /* read input */
-    char *t = strtok(line, ",");
-    for (int i=0; t != NULL; ++i) {
-        fish[i] = atoi(t);
-        ++n_fish;
-        t = strtok(NULL, ",");
-    }
-
     for (int day=0; day<days; ++day) {
-        int fish_inc = 0;
-        for (int f=0; f<n_fish; ++f) {
-            if (--fish[f] == -1) {
-                fish[f] = 6;
-                fish[n_fish + fish_inc] = 8;
-                ++fish_inc;
-                if (n_fish + fish_inc >= fish_size >> 1) {
-                    fish = realloc(fish, fish_size * 2 * sizeof(int));
-                    fish_size *= 2;
-                }
-            }
+        /* number of 0 internal timer */
+        unsigned long long new = fish[0];
+        for (int i=1; i<9; ++i) {
+            fish[i-1] = fish[i];
         }
-        n_fish += fish_inc;
+        /* parents */
+        fish[6] += new;
+        /* new spawns (should be no existing fish of this age)*/
+        fish[8] = new;
     }
 
-    free(fish);
+    unsigned long long n_fish = 0;
+    for (int i=0; i<9; ++i) {
+        n_fish += fish[i];
+    }
+    printf("%llu\n", n_fish);
 
-    printf("%d\n", n_fish);
-
+    return 0;
 }
