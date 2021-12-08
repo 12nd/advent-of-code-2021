@@ -1,7 +1,7 @@
 NAME = day05
 
 CC = gcc
-CFLAGS += -std=c99 -Wall -Wextra -Wshadow -Werror -pedantic
+CFLAGS += -std=c99 -Wall -Wextra -Wshadow -Werror -pedantic -g
 LDLIBS += -lm
 
 default: $(NAME)

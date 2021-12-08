@@ -4,15 +4,14 @@
 
 int main(int argc, char **argv)
 {
-    if (argc < 2) {
+    if (argc < 3) {
         printf("Too few arguments\n");
-        printf("for part 1: %s 1\n", argv[0]);
-        printf("for part 2: %s 2\n", argv[0]);
-        return 1;
+        printf("Usage: %s <input file> <part>\n", argv[0]);
+        exit(1);
     }
 
-    FILE *inpFile = fopen("input.txt", "r");
-    int area[1100][1100] = {0};
+    static int area[1000][1000] = {0};
+    FILE *inpFile = fopen(argv[1], "r");
     int dCount = 0;
 
     /* read input  */
@@ -31,7 +30,7 @@ int main(int argc, char **argv)
                     ++dCount;
             }
         /* diagonals */
-        } else if (atoi(argv[1]) == 2){
+        } else if (atoi(argv[2]) == 2) {
             int xInc = x1 > x2 ? -1:1;
             int yInc = y1 > y2 ? -1:1;
             int y = y1;
