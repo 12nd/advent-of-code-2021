@@ -7,9 +7,10 @@ int main(int argc, char **argv)
     if (argc < 3) {
         printf("Too few arguments\n");
         printf("Usage: %s <input file> <no. days>", argv[0]);
+        exit(1);
     }
 
-    int days= atoi(argv[2]);
+    int days = atoi(argv[2]);
     unsigned long long fish[9] = {0};
      /* read input */
     FILE *inp_file = fopen(argv[1], "r");
