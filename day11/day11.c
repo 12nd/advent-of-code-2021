@@ -16,7 +16,7 @@ void flash(int r, int c) {
 
     for (int dr = r-1; dr <= r+1; ++dr) {
         for (int dc = c-1; dc <= c+1; ++dc) {
-            if (0 <= dr && dr < 10 && 0 <= dc  && dc < 10) {
+            if (0 <= dr && dr < 10 && 0 <= dc && dc < 10) {
                 if (!flashed[dr][dc] && ++dumbo[dr][dc] > 9)
                     flash(dr, dc);
             }
@@ -26,8 +26,8 @@ void flash(int r, int c) {
 
 int main(int argc, char **argv)
 {
-    if (argc < 3) {
-        printf("Usage: %s <input file> <steps>\n", argv[0]);
+    if (argc < 2) {
+        printf("Usage: %s <input file>\n", argv[0]);
         exit(1);
     }
 
@@ -42,17 +42,37 @@ int main(int argc, char **argv)
         }
     }
 
-    for (int i=0; i < atoi(argv[2]); ++i) {
+    int step = 0;
+    int pt1 = 0;
+    while (1) {
+        /* part 1 */
+        if (step == 100)
+            pt1 = n_flash;
+        ++step;
+
         for (int r=0; r<10; ++r) {
             for (int c=0; c<10; ++c) {
                 if (!flashed[r][c] && ++dumbo[r][c] > 9)
                     flash(r,c);
             }
         }
+        /* part 2 */
+        bool all_flash = 1;
+        for (int r=0; r<10; ++r) {
+            for (int c=0; c<10; ++c) {
+                if (!flashed[r][c]) {
+                    all_flash = 0;
+                    break;
+                }
+            }
+        }
+        if (all_flash)
+            break;
         memset(flashed, 0, sizeof(flashed[0][0]) * 10 * 10);
     }
 
     fclose(inp_file);
 
-    printf("%d\n", n_flash);
+    printf("%d\n", pt1);
+    printf("%d\n", step);
 }
