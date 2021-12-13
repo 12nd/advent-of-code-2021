@@ -34,14 +34,8 @@ void insert_neighbour(char *a, char *b)
         strcpy(caves[n].neighbours[caves[n].n_neighbours++], b);
 }
 
-int count_paths(char *cur, bool *s)
+int count_paths(char *cur, bool *seen)
 {
-    /* completely scuffed... but it works for now */
-    bool seen[100] = {false};
-    for (int i=0; i<n_caves; ++i) {
-        if (s[i])
-            seen[i] = 1;
-    }
     if (!strcmp(cur, "end"))
         return 1;
 
@@ -50,6 +44,7 @@ int count_paths(char *cur, bool *s)
     if (seen[n] && islower(*cur) > 0)
         return 0;
 
+    int seen_tmp = seen[n];
     seen[n] = 1;
 
     int out = 0;
@@ -57,6 +52,7 @@ int count_paths(char *cur, bool *s)
     for (int i=0; i<cur_cave.n_neighbours; ++i) {
         out += count_paths(cur_cave.neighbours[i], seen);
     }
+    seen[n] = seen_tmp;
     return out;
 }
 
@@ -76,7 +72,8 @@ int main(int argc, char **argv)
     }
     fclose(inp_file);
 
-    bool seen[100] = {0};
+    bool *seen = calloc((unsigned long)n_caves, sizeof(bool));
     printf("%d\n", count_paths("start", seen));
+    free(seen);
 
 }
