@@ -34,15 +34,21 @@ void insert_neighbour(char *a, char *b)
         strcpy(caves[n].neighbours[caves[n].n_neighbours++], b);
 }
 
-int count_paths(char *cur, bool *seen)
+int count_paths(char *cur, bool *seen, bool twice)
 {
     if (!strcmp(cur, "end"))
         return 1;
 
     int n = find_cave(cur);
     /* going back to small cave or start */
-    if (seen[n] && islower(*cur) > 0)
-        return 0;
+    if (seen[n] && islower(*cur) > 0) {
+        if (!strcmp(cur, "start"))
+            return 0;
+        /* if cannot visit current cave twice */
+        if (!twice)
+            return 0;
+        else twice = 0;
+    }
 
     int seen_tmp = seen[n];
     seen[n] = 1;
@@ -50,7 +56,7 @@ int count_paths(char *cur, bool *seen)
     int out = 0;
     CAVE cur_cave = caves[n];
     for (int i=0; i<cur_cave.n_neighbours; ++i) {
-        out += count_paths(cur_cave.neighbours[i], seen);
+        out += count_paths(cur_cave.neighbours[i], seen, twice);
     }
     seen[n] = seen_tmp;
     return out;
@@ -73,7 +79,9 @@ int main(int argc, char **argv)
     fclose(inp_file);
 
     bool *seen = calloc((unsigned long)n_caves, sizeof(bool));
-    printf("%d\n", count_paths("start", seen));
+    printf("%d\n", count_paths("start", seen, false));
+    printf("%d\n", count_paths("start", seen, true));
     free(seen);
 
+    return 0;
 }
