@@ -66,10 +66,21 @@ int main(int argc, char **argv)
         } else {
             pt1 += fold_y(split);
         }
+        /* part 1 */
         if (first) {
             printf("%d\n", pt1);
             first = 0;
         }
+    }
+    /* part 2 */
+    for (int c=0; c < vis_y; ++c) {
+        for (int r=0; r < vis_x; ++r) {
+            if (paper[r][c])
+                printf("#");
+            else
+                printf(" ");
+        }
+        printf("\n");
     }
 
     fclose(inp_file);
