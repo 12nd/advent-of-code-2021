@@ -2,8 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+#include <stdint.h>
 
-#define BUFFER_CAP 500
+#define BUFFER_CAP 1000
 
 typedef struct Node {
     int r;
@@ -73,6 +74,31 @@ int in_heap(NODE **heap, int r, int c)
     return 0;
 }
 
+void dijkstras(NODE **heap)
+{
+    int dir[8] = {-1, 0, 1, 0, 0, 1, 0, -1};
+    while (heap_len > 0) {
+        NODE *mv = pop_min(heap);
+        int r = mv->r;
+        int c = mv->c;
+        int risk = mv->risk;
+        free(mv);
+        for (int i=0; i<8; i+=2) {
+            int rr = r + dir[i];
+            int cc = c + dir[i+1];
+            if (rr < 0 || rr >= n_rows*5 || cc < 0 || cc >= n_columns*5)
+                continue;
+            int alt = risk + cave[rr][cc];
+            if (alt < dist[rr][cc]) {
+                dist[rr][cc] = alt;
+                if (!in_heap(heap, rr, cc)) {
+                    heap_insert(heap, rr, cc, alt);
+                }
+            }
+        }
+    }
+}
+
 int main(int argc, char **argv)
 {
     if (argc < 2) {
@@ -81,10 +107,7 @@ int main(int argc, char **argv)
     }
 
     FILE *inp_file = fopen(argv[1], "r");
-
     char line[BUFFER_CAP];
-    static NODE *prioq;
-    heap_insert(&prioq, 0, 0, 0);
 
     for (int r=0; fgets(line, BUFFER_CAP, inp_file) != NULL; ++r) {
         line[strcspn(line, "\n")] = 0;
@@ -97,29 +120,32 @@ int main(int argc, char **argv)
     }
     fclose(inp_file);
     dist[0][0] = 0;
-
-    int dir[8] = {-1, 0, 1, 0, 0, 1, 0, -1};
-    while (heap_len > 0) {
-        NODE *mv = pop_min(&prioq);
-        int r = mv->r;
-        int c = mv->c;
-        int risk = mv->risk;
-        free(mv);
-        for (int i=0; i<8; i+=2) {
-            int rr = r + dir[i];
-            int cc = c + dir[i+1];
-            if (rr < 0 || rr >= n_rows || cc < 0 || cc >= n_columns)
-                continue;
-            int alt = risk + cave[rr][cc];
-            if (alt < dist[rr][cc]) {
-                dist[rr][cc] = alt;
-                if (!in_heap(&prioq, rr, cc)) {
-                    heap_insert(&prioq, rr, cc, alt);
+    /* part 2 */
+    for (int r=0; r<n_rows; ++r) {
+        for (int c=0; c<n_columns; ++c) {
+            int orig_val = cave[r][c];
+            for (int dr=0; dr<5; ++dr) {
+                for (int dc=0; dc<5; ++dc) {
+                    if (dr == 0 && dc == 0)
+                        continue;
+                    int rr = (dr * n_rows) + r;
+                    int cc = (dc * n_columns) + c;
+                    int new_val = orig_val + dr + dc;
+                    if (new_val > 9)
+                        new_val = (new_val % 10) + 1;
+                    cave[rr][cc] = new_val;
+                    dist[rr][cc] = INT_MAX;
                 }
             }
         }
     }
 
+    /* static NODE *prioq; */
+    NODE *prioq;
+    heap_insert(&prioq, 0, 0, 0);
+    dijkstras(&prioq);
+
     printf("%d\n", dist[n_rows-1][n_columns-1]);
+    printf("%d\n", dist[n_rows*5-1][n_columns*5-1]);
     return 0;
 }
