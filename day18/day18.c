@@ -63,18 +63,14 @@ void reduce_num(void)
     }
 }
 
-void addition(void)
+void addition(int l)
 {
-    memcpy(buffer, homework[0], sizeof(PAIR) * (unsigned long)line_len[0]);
-    buffer_len = line_len[0];
-    for (int line=1; line<n_lines; ++line) {
-        memcpy(buffer+buffer_len, homework[line], sizeof(PAIR) * (unsigned long)line_len[line]);
-        buffer_len += line_len[line];
-        for (int i=0; i<buffer_len; ++i) {
-            ++buffer[i].level;
-        }
-        reduce_num();
+    memcpy(buffer+buffer_len, homework[l], sizeof(PAIR) * (unsigned long)line_len[l]);
+    buffer_len += line_len[l];
+    for (int i=0; i<buffer_len; ++i) {
+        ++buffer[i].level;
     }
+    reduce_num();
 }
 
 int magnitude(void)
@@ -101,7 +97,7 @@ int main(int argc, char **argv)
     FILE *fp = fopen(argv[1], "r");
     int c = 0;
     int l = -1;
-
+    /* read input */
     while (c != EOF)
     {
         c = fgetc(fp);
@@ -120,8 +116,27 @@ int main(int argc, char **argv)
     }
     fclose(fp);
 
-    addition();
-    /* for (int i=0; i<buffer_len; ++i) */
-    /*     printf("(%d, %d)", buffer[i].num, buffer[i].level); */
+    /* part 1 */
+    memcpy(buffer, homework[0], sizeof(PAIR) * (unsigned long)line_len[0]);
+    buffer_len = line_len[0];
+    for (int line=1; line<n_lines; ++line) {
+        addition(line);
+    }
     printf("%d\n", magnitude());
+
+    /* part 2 */
+    int max_mag = 0;
+    for (int i=0; i<n_lines; ++i) {
+        for (int j=0; j<n_lines; ++j) {
+            if (i == j)
+                continue;
+            memcpy(buffer, homework[i], sizeof(PAIR) * (unsigned long)line_len[i]);
+            buffer_len = line_len[i];
+            addition(j);
+            int mag = magnitude();
+            if (mag > max_mag)
+                max_mag = mag;
+        }
+    }
+    printf("%d\n", max_mag);
 }
