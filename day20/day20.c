@@ -87,8 +87,11 @@ int main(int argc, char **argv)
     fclose(fp);
 
     int count = 0;
-    for (int i=0; i<2; ++i)
+    for (int i=0; i<50; ++i) {
         count = enhance(iea[0] && !(i%2));
+        if (i == 1)
+            printf("%d\n", count);
+    }
     printf("%d\n", count);
 
     return 0;
